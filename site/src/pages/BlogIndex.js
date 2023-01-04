@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AnimationRevealPage from "helpers/AnimationRevealPage.js";
 import { Container, ContentWithPaddingXl } from "components/misc/Layouts";
 import tw from "twin.macro";
@@ -8,6 +8,8 @@ import Header from "components/headers/light.js";
 import Footer from "components/footers/FiveColumnWithInputForm.js";
 import { SectionHeading } from "components/misc/Headings";
 import { PrimaryButton } from "components/misc/Buttons";
+import { GET_ALL_BLOG_POSTS } from "graphql/queries";
+import { ApolloClient, InMemoryCache } from '@apollo/client'
 
 const HeadingRow = tw.div`flex`;
 const Heading = tw(SectionHeading)`text-gray-900`;
@@ -46,9 +48,25 @@ const Description = tw.div``;
 const ButtonContainer = tw.div`flex justify-center`;
 const LoadMoreButton = tw(PrimaryButton)`mt-16 mx-auto`;
 
+async function getAllBlogPosts() {
+
+  const client = new ApolloClient({
+    uri: "http://localhost:1337/graphql",
+    cache: new InMemoryCache()
+  });
+
+  const { data } = await client.query({
+    query: GET_ALL_BLOG_POSTS
+  });
+  
+  return {
+      posts: data.blogPosts.data,
+  }
+}
+
 export default ({
   headingText = "Blog Posts",
-  posts = [
+  placeholderPosts = [
     {
       imageSrc:
         "https://images.unsplash.com/photo-1499678329028-101435549a4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1024&q=80",
@@ -81,9 +99,34 @@ export default ({
   ]
 }) => {
   const [visible, setVisible] = useState(7);
+  const [blogPosts, setBlogPosts] = useState([]);
   const onLoadMoreClick = () => {
     setVisible(v => v + 6);
   };
+
+  useEffect(() => {
+    window.gtag("js", new Date());
+    window.gtag("config", "UA-45799926-9");
+
+ 
+    getAllBlogPosts().then(
+      (data) => {
+        var posts = data.posts.map((val, i) => {
+          return (
+            {
+              key: i,
+              url: `blog/${val.attributes.urlSlug}`,
+              title: val.attributes.title,
+              description: val.attributes.description
+            }
+          );
+        });
+        setBlogPosts(posts)
+  
+      },
+        function(error) { /* code if some error */ }
+      )
+  }, [])
   return (
     <AnimationRevealPage>
       <Header />
@@ -93,7 +136,7 @@ export default ({
             <Heading>{headingText}</Heading>
           </HeadingRow>
           <Posts>
-            {posts.slice(0, visible).map((post, index) => (
+            {blogPosts.slice(0, visible).map((post, index) => (
               <PostContainer key={index} featured={post.featured}>
                 <Post className="group" as="a" href={post.url}>
                   <Image imageSrc={post.imageSrc} />
@@ -107,7 +150,7 @@ export default ({
               </PostContainer>
             ))}
           </Posts>
-          {visible < posts.length && (
+          {visible < blogPosts.length && (
             <ButtonContainer>
               <LoadMoreButton onClick={onLoadMoreClick}>Load More</LoadMoreButton>
             </ButtonContainer>

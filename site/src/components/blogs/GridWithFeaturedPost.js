@@ -6,6 +6,9 @@ import { css } from "styled-components/macro";
 import { SectionHeading, Subheading as SubheadingBase } from "components/misc/Headings";
 import { SectionDescription } from "components/misc/Typography";
 import { ReactComponent as SvgDotPatternIcon } from "images/dot-pattern.svg";
+import { PrimaryLink as PrimaryLinkBase } from "components/misc/Links.js";
+import { ReactComponent as ArrowRightIcon } from "images/arrow-right-icon.svg";
+
 
 const HeadingContainer = tw.div`text-center`;
 const Subheading = tw(SubheadingBase)`mb-4`;
@@ -26,6 +29,12 @@ const AuthorImage = tw.img`w-12 h-12 rounded-full mr-3`;
 const AuthorTextInfo = tw.div`text-xs text-gray-600`;
 const AuthorName = tw.div`font-semibold mt-2`;
 const AuthorProfile = tw.div`pt-1 font-medium`;
+const PrimaryLink = styled(PrimaryLinkBase)`
+  ${tw`inline-flex justify-center xl:justify-start items-center mt-8 text-lg`}
+  svg {
+    ${tw`ml-2 w-5 h-5`}
+  }
+`;
 
 const PostContainer = styled.div`
   ${tw`relative z-20 mt-10 sm:pt-3 pr-3 w-full sm:w-1/2 lg:w-1/3 max-w-sm mx-auto sm:max-w-none sm:mx-0`}
@@ -63,6 +72,8 @@ export default ({
   subheading = "",
   heading = "We love writing.",
   description = "",
+  sectionLinkText = "View all",
+  sectionLinkHref= "#",
   posts = [
     {
       postImageSrc:
@@ -118,6 +129,9 @@ export default ({
           {heading && <Heading>{heading}</Heading>}
           {description && <Description>{description}</Description>}
         </HeadingContainer>
+        <PrimaryLink href={sectionLinkHref}>
+                {sectionLinkText} <ArrowRightIcon />
+              </PrimaryLink>
         <Posts>
           {posts.map((post, index) => (
             <PostContainer featured={post.featured} key={index}>

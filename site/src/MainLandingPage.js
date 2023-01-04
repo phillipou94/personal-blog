@@ -148,8 +148,6 @@ export default ({
             }
           );
         });
-        console.log("callled!")
-        console.log(posts);
         setBlogPosts(posts)
   
       },
@@ -220,6 +218,8 @@ export default ({
           <GridWithFeaturedPost
             heading = {"Writing"}
             posts = {blogPosts}
+            sectionLinkText = {"View all"}
+            sectionLinkHref = {"/blogs"}
           > 
               
           </GridWithFeaturedPost>
